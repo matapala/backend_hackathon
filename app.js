@@ -6,7 +6,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
+var user = require('./routes/v2/user');
+var v2 = require('./routes/v2/index');
+var album = require('./routes/v2/album');
+var media = require('./routes/v2/media');
 var mongoose = require('mongoose');
 
 var app = express();
@@ -14,6 +17,7 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+mongoose.Promise = require('bluebird'); //Fix deprecation warning on mongoose builtin promise
 mongoose.connect('mongodb://bdd/atn');
 var db = mongoose.connection;
 db.on('error', console.error.bind('connection error: '));
@@ -29,8 +33,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', users);
-
+app.use('/v2/user', user);
+app.use('/v2/album', album);
+app.use('/v2/media',media);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
